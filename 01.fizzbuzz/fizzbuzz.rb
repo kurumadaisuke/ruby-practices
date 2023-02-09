@@ -1,10 +1,9 @@
 def fizzbuzz(number)
-  case
-  when number % 15 == 0 
+  if number % 15 == 0 
     puts "FizzBuzz"
-  when number % 5 == 0
+  elsif number % 5 == 0
     puts "Fizz"
-  when number % 3 == 0
+  elsif number % 3 == 0
     puts "Buzz"
   else
     puts number
