@@ -12,21 +12,15 @@ column_length = frames.each_slice(3).to_a.length # 4列の場合[3]のところ�
 column_array = frames.each_slice(column_length).to_a
 
 if column_array[-1].size < column_length
-    loop{
-    column_array[-1] << ""
-    if column_array[-1].size >= column_length
-      break
-    end
+  loop{
+    column_array[-1] << nil
+    break if column_array[-1].size >= column_length
   }
 end
 
-column_array.transpose.each do |row| # ファイル名を順番に合わせて出力する
-  row.map{|h| print h.to_s.ljust(16) } 
-  binding.break
-  row.each do |hash|
-    print hash.to_s.ljust(20)
-  end
-  print "\n"
+column_array.transpose.each_with_index do |row, i| # ファイル名を順番に合わせて出力する
+  row.map{|h| print h.to_s.ljust(16)}
+  print "\n" if !(i == column_array.transpose.length - 1)
 end
 
 # binding.break
