@@ -5,7 +5,7 @@ filenames = Dir.glob("*") # ファイル名一覧の取得
 frames = []
 
 filenames.each do |filename| # idとファイル名をハッシュで管理
-  frames << {filename: filename}
+  frames << filename
 end
 
 column_length = frames.each_slice(3).to_a.length # 4列の場合[3]のところを4にする
@@ -13,7 +13,7 @@ column_array = frames.each_slice(column_length).to_a
 
 if column_array[-1].size < column_length
     loop{
-    column_array[-1] << {filename: ""}
+    column_array[-1] << ""
     if column_array[-1].size >= column_length
       break
     end
@@ -21,9 +21,10 @@ if column_array[-1].size < column_length
 end
 
 column_array.transpose.each do |row| # ファイル名を順番に合わせて出力する
+  row.map{|h| print h.to_s.ljust(16) } 
   binding.break
   row.each do |hash|
-    print hash[:filename].to_s.ljust(20)
+    print hash.to_s.ljust(20)
   end
   print "\n"
 end
