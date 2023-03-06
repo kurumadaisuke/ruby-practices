@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-NUMBER_OF_COLUMNS = 3 # 列数の定義
+NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
 
 def filename_acquisition
   @frames = Dir.glob('*')
