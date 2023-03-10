@@ -1,9 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
 
-def filename_acquisition
+def all_filename_acquisition
+  @frames = Dir.glob('*', File::FNM_DOTMATCH)
+  filename_output
+end
+
+def default_filename_acquisition
   @frames = Dir.glob('*')
   filename_output
 end
@@ -24,4 +31,19 @@ def filename_output
   end
 end
 
-filename_acquisition
+OptionParser.new do |opt|
+  opt.on('-a', 'Show all file names.') { |o| @all = o }
+  begin
+    opt.parse! # オプション解析してくれる
+  rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
+    puts "Error Message: #{e.message}"
+    puts opt
+    exit
+  end
+end
+
+if @all == true
+  all_filename_acquisition
+else
+  default_filename_acquisition
+end
