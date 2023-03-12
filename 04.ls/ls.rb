@@ -10,6 +10,11 @@ def all_filename_acquisition
   filename_output
 end
 
+def reverse_filename_acquisition
+  @frames = Dir.glob('*').reverse
+  filename_output
+end
+
 def default_filename_acquisition
   @frames = Dir.glob('*')
   filename_output
@@ -33,6 +38,7 @@ end
 
 OptionParser.new do |opt|
   opt.on('-a', 'Show all file names.') { |o| @all = o }
+  opt.on('-r', 'Reverse file order.') { |o| @reverse = o }
   begin
     opt.parse! # オプション解析してくれる
   rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
@@ -44,6 +50,8 @@ end
 
 if @all == true
   all_filename_acquisition
+elsif @reverse == true
+  reverse_filename_acquisition
 else
   default_filename_acquisition
 end
