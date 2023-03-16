@@ -36,29 +36,11 @@ def long_filename_acquisition
   frames.each do |filename|
     y = File.stat(filename)
     space = "  "
-    filetype = 
-      case y.ftype
-        when "fifo"
-          "p"
-        when "characterSpecial"
-          "c"
-        when "directory"
-          "d"
-        when "blockSpecial"
-          "b"
-        when "file"
-          "-"
-        when "link"
-          "l"
-        when "socket"
-          "s"
-      end
-      
+    filetype = filetype_conversion(y.ftype)
     permission = "%06d"% y.mode.to_s(8)
     owner_permission = permission_conversion(permission.slice(3, 1))
     owner_group_permission = permission_conversion(permission.slice(4, 1))
     other_permission = permission_conversion(permission.slice(5, 1))
-
     hard_link = y.nlink.to_s + space
     user_name = Etc.getpwuid(y.uid).name + space
     group_name = Etc.getgrgid(y.gid).name + space
@@ -88,6 +70,25 @@ def permission_conversion(permission)
       "rw-"
     when "7"
       "rwx"
+  end
+end
+
+def filetype_conversion(filetype)
+  case filetype
+    when "fifo"
+      "p"
+    when "characterSpecial"
+      "c"
+    when "directory"
+      "d"
+    when "blockSpecial"
+      "b"
+    when "file"
+      "-"
+    when "link"
+      "l"
+    when "socket"
+      "s"
   end
 end
 
