@@ -8,6 +8,11 @@ require 'time'
 
 NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
 
+def default_filename_acquisition
+  @frames = Dir.glob('*')
+  filename_output
+end
+
 def all_filename_acquisition
   @frames = Dir.glob('*', File::FNM_DOTMATCH)
   filename_output
@@ -50,65 +55,10 @@ def long_filename_acquisition
       end
       
     permission = "%06d"% y.mode.to_s(8)
-    owner_permission =
-      case permission.slice(3, 1)
-        when "0"
-          "---"
-        when "1"
-          "--x"
-        when "2"
-          "-w-"
-        when "3"
-          "-wx"
-        when "4"
-          "r--"
-        when "5"
-          "r-x"
-        when "6"
-          "rw-"
-        when "7"
-          "rwx"
-        end
+    owner_permission = permission_conversion(permission.slice(3, 1))
+    owner_group_permission = permission_conversion(permission.slice(4, 1))
+    other_permission = permission_conversion(permission.slice(5, 1))
 
-    owner_group_permission =
-      case permission.slice(4, 1)
-        when "0"
-          "---"
-        when "1"
-          "--x"
-        when "2"
-          "-w-"
-        when "3"
-          "-wx"
-        when "4"
-          "r--"
-        when "5"
-          "r-x"
-        when "6"
-          "rw-"
-        when "7"
-          "rwx"
-        end
-    
-    other_permission =
-      case permission.slice(5, 1)
-        when "0"
-          "---"
-        when "1"
-          "--x"
-        when "2"
-          "-w-"
-        when "3"
-          "-wx"
-        when "4"
-          "r--"
-        when "5"
-          "r-x"
-        when "6"
-          "rw-"
-        when "7"
-          "rwx"
-        end
     hard_link = y.nlink.to_s + space
     user_name = Etc.getpwuid(y.uid).name + space
     group_name = Etc.getgrgid(y.gid).name + space
@@ -116,18 +66,29 @@ def long_filename_acquisition
     data_of_last_change = y.mtime.strftime("%m %d %H:%M") + space
 
     print filetype + owner_permission + owner_group_permission + other_permission + space
-    puts hard_link +
-    user_name +
-    group_name +
-    file_size +
-    data_of_last_change +
-    filename
+    puts hard_link + user_name + group_name + file_size + data_of_last_change + filename
   end
 end
 
-def default_filename_acquisition
-  @frames = Dir.glob('*')
-  filename_output
+def permission_conversion(permission)
+  case permission
+    when "0"
+      "---"
+    when "1"
+      "--x"
+    when "2"
+      "-w-"
+    when "3"
+      "-wx"
+    when "4"
+      "r--"
+    when "5"
+      "r-x"
+    when "6"
+      "rw-"
+    when "7"
+      "rwx"
+  end
 end
 
 def filename_output
