@@ -7,6 +7,25 @@ require 'etc'
 require 'time'
 
 NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
+PERMISSION = {
+  '0' => '---',
+  '1' => '--x',
+  '2' => '-w-',
+  '3' => '-wx',
+  '4' => 'r--',
+  '5' => 'r-x',
+  '6' => 'rw-',
+  '7' => 'rwx'
+}.freeze
+FILETYPE = {
+  'fifo' => 'p',
+  'characterSpecial' => 'c',
+  'directory' => 'd',
+  'blockSpecial' => 'b',
+  'file' => '-',
+  'link' => 'l',
+  'socket' => 's'
+}.freeze
 
 def default_filename_acquisition
   @frames = Dir.glob('*')
@@ -25,19 +44,13 @@ end
 
 def long_filename_acquisition
   frames = Dir.glob('*')
-
-  total_block_size = []
-  frames.each do |filename|
-    y = File.stat(filename)
-    total_block_size <<  y.blocks
-  end
-  puts "total #{total_block_size.sum}"
+  total_block_size
 
   frames.each do |filename|
     y = File.stat(filename)
-    space = "  "
+    space = '  '
     filetype = filetype_conversion(y.ftype)
-    permission = "%06d"% y.mode.to_s(8)
+    permission = format('%06d', y.mode.to_s(8))
     owner_permission = permission_conversion(permission.slice(3, 1))
     owner_group_permission = permission_conversion(permission.slice(4, 1))
     other_permission = permission_conversion(permission.slice(5, 1))
@@ -45,7 +58,7 @@ def long_filename_acquisition
     user_name = Etc.getpwuid(y.uid).name + space
     group_name = Etc.getgrgid(y.gid).name + space
     file_size = y.size.to_s.rjust(4) + space
-    data_of_last_change = y.mtime.strftime("%m %d %H:%M") + space
+    data_of_last_change = y.mtime.strftime('%m %d %H:%M') + space
 
     print filetype + owner_permission + owner_group_permission + other_permission + space
     puts hard_link + user_name + group_name + file_size + data_of_last_change + filename
@@ -53,43 +66,21 @@ def long_filename_acquisition
 end
 
 def permission_conversion(permission)
-  case permission
-    when "0"
-      "---"
-    when "1"
-      "--x"
-    when "2"
-      "-w-"
-    when "3"
-      "-wx"
-    when "4"
-      "r--"
-    when "5"
-      "r-x"
-    when "6"
-      "rw-"
-    when "7"
-      "rwx"
-  end
+  PERMISSION[permission]
 end
 
 def filetype_conversion(filetype)
-  case filetype
-    when "fifo"
-      "p"
-    when "characterSpecial"
-      "c"
-    when "directory"
-      "d"
-    when "blockSpecial"
-      "b"
-    when "file"
-      "-"
-    when "link"
-      "l"
-    when "socket"
-      "s"
+  FILETYPE[filetype]
+end
+
+def total_block_size
+  frames = Dir.glob('*')
+  total_block_size = []
+  frames.each do |filename|
+    y = File.stat(filename)
+    total_block_size << y.blocks
   end
+  puts "total #{total_block_size.sum}"
 end
 
 def filename_output
