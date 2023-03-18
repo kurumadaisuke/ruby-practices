@@ -2,9 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'tempfile'
 require 'etc'
-require 'time'
 
 NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
 PERMISSION = {
@@ -44,7 +42,8 @@ end
 
 def long_filename_acquisition
   frames = Dir.glob('*')
-  total_block_size
+  sum = frames.sum {|frame| File.stat(frame).blocks }
+  puts "total #{sum}"
 
   frames.each do |filename|
     y = File.stat(filename)
@@ -60,8 +59,8 @@ def long_filename_acquisition
     file_size = y.size.to_s.rjust(4) + space
     data_of_last_change = y.mtime.strftime('%m %d %H:%M') + space
 
-    print filetype + owner_permission + owner_group_permission + other_permission + space
-    puts hard_link + user_name + group_name + file_size + data_of_last_change + filename
+    text = [filetype, owner_permission, owner_group_permission, other_permission, space, hard_link, user_name, group_name, file_size, data_of_last_change, filename]
+    puts text.join
   end
 end
 
@@ -71,16 +70,6 @@ end
 
 def filetype_conversion(filetype)
   FILETYPE[filetype]
-end
-
-def total_block_size
-  frames = Dir.glob('*')
-  total_block_size = []
-  frames.each do |filename|
-    y = File.stat(filename)
-    total_block_size << y.blocks
-  end
-  puts "total #{total_block_size.sum}"
 end
 
 def filename_output
