@@ -42,24 +42,23 @@ end
 
 def long_filename_acquisition
   frames = Dir.glob('*')
-  sum = frames.sum {|frame| File.stat(frame).blocks }
+  sum = frames.sum { |frame| File.stat(frame).blocks }
   puts "total #{sum}"
 
   frames.each do |filename|
     y = File.stat(filename)
-    space = '  '
-    filetype = filetype_conversion(y.ftype)
-    permission = format('%06d', y.mode.to_s(8))
-    owner_permission = permission_conversion(permission.slice(3, 1))
-    owner_group_permission = permission_conversion(permission.slice(4, 1))
-    other_permission = permission_conversion(permission.slice(5, 1))
-    hard_link = y.nlink.to_s + space
-    user_name = Etc.getpwuid(y.uid).name + space
-    group_name = Etc.getgrgid(y.gid).name + space
-    file_size = y.size.to_s.rjust(4) + space
-    data_of_last_change = y.mtime.strftime('%m %d %H:%M') + space
-
-    text = [filetype, owner_permission, owner_group_permission, other_permission, space, hard_link, user_name, group_name, file_size, data_of_last_change, filename]
+    text = [
+      filetype_conversion(y.ftype),
+      permission_conversion(format('%06d', y.mode.to_s(8)).slice(3, 1)),
+      permission_conversion(format('%06d', y.mode.to_s(8)).slice(4, 1)),
+      "#{permission_conversion(format('%06d', y.mode.to_s(8)).slice(5, 1))} ",
+      "#{y.nlink} ",
+      "#{Etc.getpwuid(y.uid).name} ",
+      "#{Etc.getgrgid(y.gid).name} ",
+      "#{y.size.to_s.rjust(4)} ",
+      "#{y.mtime.strftime('%m %d %H:%M')} ",
+      filename
+    ]
     puts text.join
   end
 end
