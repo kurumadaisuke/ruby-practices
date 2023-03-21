@@ -2,8 +2,33 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'etc'
 
 NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
+PERMISSION = {
+  '0' => '---',
+  '1' => '--x',
+  '2' => '-w-',
+  '3' => '-wx',
+  '4' => 'r--',
+  '5' => 'r-x',
+  '6' => 'rw-',
+  '7' => 'rwx'
+}.freeze
+FILETYPE = {
+  'fifo' => 'p',
+  'characterSpecial' => 'c',
+  'directory' => 'd',
+  'blockSpecial' => 'b',
+  'file' => '-',
+  'link' => 'l',
+  'socket' => 's'
+}.freeze
+
+def default_filename_acquisition
+  @frames = Dir.glob('*')
+  filename_output
+end
 
 def all_filename_acquisition
   @frames = Dir.glob('*', File::FNM_DOTMATCH)
@@ -15,9 +40,35 @@ def reverse_filename_acquisition
   filename_output
 end
 
-def default_filename_acquisition
-  @frames = Dir.glob('*')
-  filename_output
+def long_filename_acquisition
+  frames = Dir.glob('*')
+  sum = frames.sum { |frame| File.stat(frame).blocks }
+  puts "total #{sum}"
+
+  frames.each do |filename|
+    y = File.stat(filename)
+    text = [
+      filetype_conversion(y.ftype),
+      permission_conversion(format('%06d', y.mode.to_s(8)).slice(3, 1)),
+      permission_conversion(format('%06d', y.mode.to_s(8)).slice(4, 1)),
+      "#{permission_conversion(format('%06d', y.mode.to_s(8)).slice(5, 1))} ",
+      "#{y.nlink} ",
+      "#{Etc.getpwuid(y.uid).name} ",
+      "#{Etc.getgrgid(y.gid).name} ",
+      "#{y.size.to_s.rjust(4)} ",
+      "#{y.mtime.strftime('%m %d %H:%M')} ",
+      filename
+    ]
+    puts text.join
+  end
+end
+
+def permission_conversion(permission)
+  PERMISSION[permission]
+end
+
+def filetype_conversion(filetype)
+  FILETYPE[filetype]
 end
 
 def filename_output
@@ -39,6 +90,7 @@ end
 OptionParser.new do |opt|
   opt.on('-a', 'Show all file names.') { |o| @all = o }
   opt.on('-r', 'Reverse file order.') { |o| @reverse = o }
+  opt.on('-l', 'Long format file.') { |o| @long = o }
   begin
     opt.parse! # オプション解析してくれる
   rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
@@ -52,6 +104,8 @@ if @all == true
   all_filename_acquisition
 elsif @reverse == true
   reverse_filename_acquisition
+elsif @long == true
+  long_filename_acquisition
 else
   default_filename_acquisition
 end
