@@ -4,7 +4,10 @@
 require 'optparse'
 require 'etc'
 
-NUMBER_OF_COLUMNS = 3 # 列数の定義（数字を変える）
+# 列数の定義（数字を変える）
+NUMBER_OF_COLUMNS = 3
+
+# パーミッション変換の定数
 PERMISSION = {
   '0' => '---',
   '1' => '--x',
@@ -15,6 +18,8 @@ PERMISSION = {
   '6' => 'rw-',
   '7' => 'rwx'
 }.freeze
+
+# ファイルタイプ変換の定数
 FILETYPE = {
   'fifo' => 'p',
   'characterSpecial' => 'c',
@@ -25,27 +30,48 @@ FILETYPE = {
   'socket' => 's'
 }.freeze
 
+# デフォルトlsコマンド
 def default_filename_acquisition
   @frames = Dir.glob('*')
   filename_output
 end
 
+# ls -aコマンド
 def all_filename_acquisition
   @frames = Dir.glob('*', File::FNM_DOTMATCH)
   filename_output
 end
 
+# ls -rコマンド
 def reverse_filename_acquisition
   @frames = Dir.glob('*').reverse
   filename_output
 end
 
+# ls -lコマンド
 def long_filename_acquisition
-  frames = Dir.glob('*')
-  sum = frames.sum { |frame| File.stat(frame).blocks }
+  @frames = Dir.glob('*')
+  long_filename_output
+end
+
+# ls -alコマンド
+def all_long_filename_acquisition
+  @frames = Dir.glob('*', File::FNM_DOTMATCH)
+  long_filename_output
+end
+
+# ls -alrコマンド
+def reverse_all_long_filename_acquisition
+  @frames = Dir.glob('*', File::FNM_DOTMATCH).reverse
+  long_filename_output
+end
+
+# ls -lコマンドの出力部分
+def long_filename_output
+  sum = @frames.sum { |frame| File.stat(frame).blocks }
   puts "total #{sum}"
 
-  frames.each do |filename|
+  @frames.each do |filename|
     y = File.stat(filename)
     text = [
       filetype_conversion(y.ftype),
@@ -63,14 +89,17 @@ def long_filename_acquisition
   end
 end
 
+# パーミッション定数呼び出し
 def permission_conversion(permission)
   PERMISSION[permission]
 end
 
+# ファイルタイプ定数呼び出し
 def filetype_conversion(filetype)
   FILETYPE[filetype]
 end
 
+# lsコマンドの出力部分
 def filename_output
   column_length = @frames.each_slice(NUMBER_OF_COLUMNS).to_a.length
   column_array = @frames.each_slice(column_length).to_a
@@ -87,25 +116,40 @@ def filename_output
   end
 end
 
-OptionParser.new do |opt|
-  opt.on('-a', 'Show all file names.') { |o| @all = o }
-  opt.on('-r', 'Reverse file order.') { |o| @reverse = o }
-  opt.on('-l', 'Long format file.') { |o| @long = o }
-  begin
-    opt.parse! # オプション解析してくれる
-  rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
-    puts "Error Message: #{e.message}"
-    puts opt
-    exit
-  end
-end
+# OptionParser.new do |opt|
+#   opt.on('-a', 'Show all file names.') { |o| @all = o }
+#   opt.on('-r', 'Reverse file order.') { |o| @reverse = o }
+#   opt.on('-l', 'Long format file.') { |o| @long = o }
+#   begin
+#     opt.parse! # オプション解析してくれる
+#   rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
+#     puts "Error Message: #{e.message}"
+#     puts opt
+#     exit
+#   end
+# end
 
-if @all == true
+# if @all == true
+#   all_filename_acquisition
+# elsif @reverse == true
+#   reverse_filename_acquisition
+# elsif @long == true
+#   long_filename_acquisition
+# else
+#   default_filename_acquisition
+# end
+
+option = ARGV.getopts('arl')
+if option['a'] == true && option['r'] == false && option['l'] == false
   all_filename_acquisition
-elsif @reverse == true
+elsif option['a'] == false && option['r'] == true && option['l'] == false
   reverse_filename_acquisition
-elsif @long == true
+elsif option['a'] == false && option['r'] == false && option['l'] == true
   long_filename_acquisition
+elsif option['a'] == true && option['r'] == false && option['l'] == true
+  all_long_filename_acquisition
+elsif option['a'] == true && option['r'] == true && option['l'] == true
+  reverse_all_long_filename_acquisition
 else
   default_filename_acquisition
 end
