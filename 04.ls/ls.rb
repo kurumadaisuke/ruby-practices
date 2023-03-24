@@ -60,6 +60,18 @@ def all_long_filename_acquisition
   long_filename_output
 end
 
+# ls -arコマンド
+def reverse_all_filename_acquisition
+  @frames = Dir.glob('*', File::FNM_DOTMATCH).reverse
+  filename_output
+end
+
+# ls -lrコマンド
+def reverse_long_filename_acquisition
+  @frames = Dir.glob('*').reverse
+  long_filename_output
+end
+
 # ls -alrコマンド
 def reverse_all_long_filename_acquisition
   @frames = Dir.glob('*', File::FNM_DOTMATCH).reverse
@@ -116,40 +128,25 @@ def filename_output
   end
 end
 
-# OptionParser.new do |opt|
-#   opt.on('-a', 'Show all file names.') { |o| @all = o }
-#   opt.on('-r', 'Reverse file order.') { |o| @reverse = o }
-#   opt.on('-l', 'Long format file.') { |o| @long = o }
-#   begin
-#     opt.parse! # オプション解析してくれる
-#   rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
-#     puts "Error Message: #{e.message}"
-#     puts opt
-#     exit
-#   end
-# end
-
-# if @all == true
-#   all_filename_acquisition
-# elsif @reverse == true
-#   reverse_filename_acquisition
-# elsif @long == true
-#   long_filename_acquisition
-# else
-#   default_filename_acquisition
-# end
-
-option = ARGV.getopts('arl')
-if option['a'] == true && option['r'] == false && option['l'] == false
-  all_filename_acquisition
-elsif option['a'] == false && option['r'] == true && option['l'] == false
-  reverse_filename_acquisition
-elsif option['a'] == false && option['r'] == false && option['l'] == true
-  long_filename_acquisition
-elsif option['a'] == true && option['r'] == false && option['l'] == true
-  all_long_filename_acquisition
-elsif option['a'] == true && option['r'] == true && option['l'] == true
-  reverse_all_long_filename_acquisition
-else
-  default_filename_acquisition
+begin
+  option = ARGV.getopts('arl')
+  if option['a'] == true && option['r'] == false && option['l'] == false
+    all_filename_acquisition
+  elsif option['a'] == false && option['r'] == true && option['l'] == false
+    reverse_filename_acquisition
+  elsif option['a'] == false && option['r'] == false && option['l'] == true
+    long_filename_acquisition
+  elsif option['a'] == true && option['r'] == false && option['l'] == true
+    all_long_filename_acquisition
+  elsif option['a'] == true && option['r'] == true && option['l'] == false
+    reverse_all_filename_acquisition
+  elsif option['a'] == false && option['r'] == true && option['l'] == true
+    reverse_long_filename_acquisition
+  elsif option['a'] == true && option['r'] == true && option['l'] == true
+    reverse_all_long_filename_acquisition
+  else
+    default_filename_acquisition
+  end
+rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
+  puts "Error Message: #{e.message}"
 end
