@@ -30,55 +30,7 @@ FILETYPE = {
   'socket' => 's'
 }.freeze
 
-# デフォルトlsコマンド
-def default_filename_acquisition
-  @frames = Dir.glob('*')
-  filename_output
-end
-
-# ls -aコマンド
-def all_filename_acquisition
-  @frames = Dir.glob('*', File::FNM_DOTMATCH)
-  filename_output
-end
-
-# ls -rコマンド
-def reverse_filename_acquisition
-  @frames = Dir.glob('*').reverse
-  filename_output
-end
-
-# ls -lコマンド
-def long_filename_acquisition
-  @frames = Dir.glob('*')
-  long_filename_output
-end
-
-# ls -alコマンド
-def all_long_filename_acquisition
-  @frames = Dir.glob('*', File::FNM_DOTMATCH)
-  long_filename_output
-end
-
-# ls -arコマンド
-def reverse_all_filename_acquisition
-  @frames = Dir.glob('*', File::FNM_DOTMATCH).reverse
-  filename_output
-end
-
-# ls -lrコマンド
-def reverse_long_filename_acquisition
-  @frames = Dir.glob('*').reverse
-  long_filename_output
-end
-
-# ls -alrコマンド
-def reverse_all_long_filename_acquisition
-  @frames = Dir.glob('*', File::FNM_DOTMATCH).reverse
-  long_filename_output
-end
-
-# ls -lコマンドの出力部分
+# ls -lコマンド時の出力
 def long_filename_output
   sum = @frames.sum { |frame| File.stat(frame).blocks }
   puts "total #{sum}"
@@ -111,8 +63,8 @@ def filetype_conversion(filetype)
   FILETYPE[filetype]
 end
 
-# lsコマンドの出力部分
-def filename_output
+# lsコマンド(デフォルト)出力
+def default_output
   column_length = @frames.each_slice(NUMBER_OF_COLUMNS).to_a.length
   column_array = @frames.each_slice(column_length).to_a
 
@@ -130,23 +82,11 @@ end
 
 begin
   option = ARGV.getopts('arl')
-  if option['a'] == true && option['r'] == false && option['l'] == false
-    all_filename_acquisition
-  elsif option['a'] == false && option['r'] == true && option['l'] == false
-    reverse_filename_acquisition
-  elsif option['a'] == false && option['r'] == false && option['l'] == true
-    long_filename_acquisition
-  elsif option['a'] == true && option['r'] == false && option['l'] == true
-    all_long_filename_acquisition
-  elsif option['a'] == true && option['r'] == true && option['l'] == false
-    reverse_all_filename_acquisition
-  elsif option['a'] == false && option['r'] == true && option['l'] == true
-    reverse_long_filename_acquisition
-  elsif option['a'] == true && option['r'] == true && option['l'] == true
-    reverse_all_long_filename_acquisition
-  else
-    default_filename_acquisition
-  end
+  @frames = option['a'] == true ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  @frames = option['r'] == true ? @frames.reverse : @frames
+  output_method = option['l'] == true ? long_filename_output : default_output
 rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
   puts "Error Message: #{e.message}"
 end
+
+output_method
