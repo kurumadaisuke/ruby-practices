@@ -3,6 +3,7 @@
 
 require 'optparse'
 require 'etc'
+require 'debug'
 
 # 列数の定義（数字を変える）
 NUMBER_OF_COLUMNS = 3
@@ -88,5 +89,3 @@ begin
 rescue OptionParser::InvalidOption => e # 存在しないオプションを指定された場合
   puts "Error Message: #{e.message}"
 end
-
-output_method
