@@ -3,41 +3,48 @@
 require 'optparse'
 require 'debug'
 
-acquisition_filenames = ARGV
+@acquisition_filenames = ARGV
+@output = []
+@total = []
 
 def lines_option(filenames)
   @lines = []
   filenames.each {|filename| @lines << File.read(filename).count("\n").to_s.rjust(8)}
+  @output << @lines
+  if @acquisition_filenames.size >= 2
+    @total << filenames.sum { |file| File.read(file).count("\n") }.to_s.rjust(8)
+  end
 end
 
 def words_option(filenames)
   @words = []
   filenames.each {|file| @words << File.read(file).split(/\s+/).size.to_s.rjust(7) }
+  @output << @words
+  if @acquisition_filenames.size >= 2
+    @total << filenames.sum { |file| File.read(file).split.size }.to_s.rjust(7)
+  end
 end
 
 def bytes_option(filenames)
   @bytes = []
   filenames.each {|file| @bytes << File.size(file).to_s.rjust(8) }
+  @output << @bytes
+  if @acquisition_filenames.size >= 2
+    @total << filenames.sum { |file| File.size(file) }.to_s.rjust(8)
+  end
 end
 
 def file_name(filenames)
   @filename = []
   filenames.each {|file| @filename << file }
+  @output << @filename
 end
 
-# if filenames.size >= 2
-#   total_lines = filenames.sum { |file| File.read(file).count("\n") }
-#   total_bytes = filenames.sum { |file| File.read(file).split.size }
-#   total_words = filenames.sum { |file| File.size(file) }
-#   total_text = [
-#     "#{total_lines.to_s.rjust(8)} ",
-#     "#{total_bytes.to_s.rjust(7)} ",
-#     "#{total_words.to_s.rjust(8)} ",
-#     "total"
-#   ]
-#   puts total_text.join
-# end
-
+def output
+  transposed = @output.transpose
+  transposed.each { |row| puts row.join(' ') }
+  puts "#{@total.join(' ')} total"
+end
 
 begin
   option = ARGV.getopts('lwc')
@@ -46,26 +53,11 @@ begin
     option['w'] = true
     option['c'] = true
   end
-  option['l'] == true ? lines_option(acquisition_filenames) : nil
-  option['w'] == true ? words_option(acquisition_filenames) : nil
-  option['c'] == true ? bytes_option(acquisition_filenames) : nil
-  file_name(acquisition_filenames)
+  option['l'] == true ? lines_option(@acquisition_filenames) : nil
+  option['w'] == true ? words_option(@acquisition_filenames) : nil
+  option['c'] == true ? bytes_option(@acquisition_filenames) : nil
+  file_name(@acquisition_filenames)
+  output
 rescue OptionParser::InvalidOption => e
   puts "Error Message: #{e.message}"
 end
-
-p @lines
-p @words
-p @bytes
-p @filename
-
-
-# filename.each do |file|
-#   text = [
-#     "#{File.read(file).count("\n").to_s.rjust(8)} ",
-#     "#{File.read(file).split(/\s+/).size.to_s.rjust(7)} ",
-#     "#{File.size(file).to_s.rjust(8)} ",
-#     file
-#   ]
-#   puts text.join
-# end
