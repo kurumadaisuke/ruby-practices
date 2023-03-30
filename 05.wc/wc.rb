@@ -4,6 +4,12 @@ require 'optparse'
 require 'debug'
 
 @acquisition_filenames = ARGV
+
+output = $stdin.readlines.join
+print output.count("\n").to_s.rjust(8)
+print output.split(/\s+/).count.to_s.rjust(8)
+print output.size.to_s.rjust(8)
+
 @output = []
 @total = []
 
@@ -43,15 +49,15 @@ end
 def output
   transposed = @output.transpose
   transposed.each { |row| puts row.join(' ') }
-  puts "#{@total.join(' ')} total"
+  if @acquisition_filenames.size >= 2
+    puts "#{@total.join(' ')} total"
+  end
 end
 
 begin
   option = ARGV.getopts('lwc')
   if option['l']  == false && option['w'] == false && option['c'] == false
-    option['l'] = true
-    option['w'] = true
-    option['c'] = true
+    option['l'] = true && option['w'] = true && option['c'] = true
   end
   option['l'] == true ? lines_option(@acquisition_filenames) : nil
   option['w'] == true ? words_option(@acquisition_filenames) : nil
@@ -61,3 +67,4 @@ begin
 rescue OptionParser::InvalidOption => e
   puts "Error Message: #{e.message}"
 end
+
