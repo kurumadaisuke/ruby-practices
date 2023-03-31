@@ -3,13 +3,6 @@
 require 'optparse'
 require 'debug'
 
-@acquisition_filenames = ARGV
-
-output = $stdin.readlines.join
-print output.count("\n").to_s.rjust(8)
-print output.split(/\s+/).count.to_s.rjust(8)
-print output.size.to_s.rjust(8)
-
 @output = []
 @total = []
 
@@ -54,17 +47,31 @@ def output
   end
 end
 
+def pipe_output(output)
+  print output.count("\n").to_s.rjust(8)
+  print output.split(/\s+/).count.to_s.rjust(8)
+  print output.size.to_s.rjust(8)
+end
+
+if !ARGV.empty?
+  @acquisition_filenames = ARGV
+else
+  pipe_output = $stdin.readlines.join
+  pipe_output(pipe_output)
+end
+
 begin
   option = ARGV.getopts('lwc')
-  if option['l']  == false && option['w'] == false && option['c'] == false
+  if option['l']  == false && option['w'] == false && option['c'] == false && !ARGV.empty?
     option['l'] = true && option['w'] = true && option['c'] = true
   end
-  option['l'] == true ? lines_option(@acquisition_filenames) : nil
-  option['w'] == true ? words_option(@acquisition_filenames) : nil
-  option['c'] == true ? bytes_option(@acquisition_filenames) : nil
-  file_name(@acquisition_filenames)
-  output
+    option['l'] ? lines_option(@acquisition_filenames) : nil
+    option['w'] ? words_option(@acquisition_filenames) : nil
+    option['c'] ? bytes_option(@acquisition_filenames) : nil
+  if !ARGV.empty?
+    file_name(@acquisition_filenames)
+    output
+  end
 rescue OptionParser::InvalidOption => e
   puts "Error Message: #{e.message}"
 end
-
