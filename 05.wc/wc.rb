@@ -10,7 +10,7 @@ def lines_option(filenames)
   @lines = []
   filenames.each { |filename| @lines << File.read(filename).count("\n").to_s.rjust(8) }
   @output << @lines
-  return unless @acquisition_filenames.size >= 2
+  return if @acquisition_filenames.size < 2
 
   @total << filenames.sum { |file| File.read(file).count("\n") }.to_s.rjust(8)
 end
@@ -19,7 +19,7 @@ def words_option(filenames)
   @words = []
   filenames.each { |file| @words << File.read(file).split(/\s+/).size.to_s.rjust(7) }
   @output << @words
-  return unless @acquisition_filenames.size >= 2
+  return if @acquisition_filenames.size < 2
 
   @total << filenames.sum { |file| File.read(file).split.size }.to_s.rjust(7)
 end
@@ -28,7 +28,7 @@ def bytes_option(filenames)
   @bytes = []
   filenames.each { |file| @bytes << File.size(file).to_s.rjust(8) }
   @output << @bytes
-  return unless @acquisition_filenames.size >= 2
+  return if @acquisition_filenames.size < 2
 
   @total << filenames.sum { |file| File.size(file) }.to_s.rjust(8)
 end
@@ -42,7 +42,7 @@ end
 def output
   transposed = @output.transpose
   transposed.each { |row| puts row.join(' ') }
-  return unless @acquisition_filenames.size >= 2
+  return if @acquisition_filenames.size < 2
 
   puts "#{@total.join(' ')} total"
 end
@@ -50,7 +50,7 @@ end
 def pipe_output(output)
   print output.count("\n").to_s.rjust(8)
   print output.split(/\s+/).count.to_s.rjust(8)
-  print output.size.to_s.rjust(8)
+  print output.bytesize.to_s.rjust(8)
 end
 
 if !ARGV.empty?
