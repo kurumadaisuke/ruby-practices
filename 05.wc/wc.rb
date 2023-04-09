@@ -6,7 +6,7 @@ require 'optparse'
 @output = []
 @total = []
 
-def lines_option(filenames)
+def lines_count(filenames)
   @lines = []
   filenames.each { |filename| @lines << File.read(filename).count("\n").to_s.rjust(8) }
   @output << @lines
@@ -15,7 +15,7 @@ def lines_option(filenames)
   @total << filenames.sum { |file| File.read(file).count("\n") }.to_s.rjust(8)
 end
 
-def words_option(filenames)
+def words_count(filenames)
   @words = []
   filenames.each { |file| @words << File.read(file).split(/\s+/).size.to_s.rjust(7) }
   @output << @words
@@ -24,7 +24,7 @@ def words_option(filenames)
   @total << filenames.sum { |file| File.read(file).split.size }.to_s.rjust(7)
 end
 
-def bytes_option(filenames)
+def bytes_count(filenames)
   @bytes = []
   filenames.each { |file| @bytes << File.size(file).to_s.rjust(8) }
   @output << @bytes
@@ -56,8 +56,7 @@ end
 if !ARGV.empty?
   @acquisition_filenames = ARGV
 else
-  pipe_output = $stdin.readlines.join
-  pipe_output(pipe_output)
+  pipe_output($stdin.read)
 end
 
 begin
@@ -65,9 +64,9 @@ begin
   option['l'] = true && option['w'] = true && option['c'] = true if
   option['l'] == false && option['w'] == false && option['c'] == false && !ARGV.empty?
 
-  option['l'] ? lines_option(@acquisition_filenames) : nil
-  option['w'] ? words_option(@acquisition_filenames) : nil
-  option['c'] ? bytes_option(@acquisition_filenames) : nil
+  lines_count(@acquisition_filenames) if option['l']
+  words_count(@acquisition_filenames) if option['w']
+  bytes_count(@acquisition_filenames) if option['c']
   unless ARGV.empty?
     file_name(@acquisition_filenames)
     output
