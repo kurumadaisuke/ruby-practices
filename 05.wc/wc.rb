@@ -7,9 +7,9 @@ def format(count)
   count.to_s.rjust(8)
 end
 
-def file_read(filenames)
+def read_files(filenames)
   file_contents = []
-  filenames.each { |filename| file_contents << File.read(filename) }
+  filenames.map { |filename| file_contents << File.read(filename) }
   file_contents
 end
 
@@ -31,10 +31,6 @@ def bytes_count(file_contents)
   bytes
 end
 
-def file_name(filenames)
-  filenames.map { |filename| " #{filename}" }
-end
-
 def output(row, total, filename)
   transposed = row.transpose
   transposed.each { |r| puts r.join }
@@ -43,12 +39,12 @@ end
 
 begin
   option = ARGV.getopts('lwc')
-  option['l'] = true && option['w'] = true && option['c'] = true if option['l'] == false && option['w'] == false && option['c'] == false
+  option = { 'l' => true, 'w' => true, 'c' => true } if !option['l'] && !option['w'] && !option['c']
 
   if ARGV.any?
-    acquisition_filenames = ARGV
-    file_contents = file_read(acquisition_filenames)
-    filename = file_name(acquisition_filenames)
+    filenames = ARGV
+    file_contents = read_files(filenames)
+    filename = filenames.map { |f| " #{f}" }
   else
     file_contents = [$stdin.read]
     filename = []
@@ -60,14 +56,16 @@ begin
   row << bytes_count(file_contents) if option['c']
 
   if ARGV.any?
-    row << file_name(acquisition_filenames)
+    row << filenames.map { |f| " #{f}" }
     filename = filename.each(&:strip!)
   end
 
-  total = []
-  total << format(filename.sum { |file| File.read(file).count("\n") }) if option['l'] && filename.size >= 2
-  total << format(filename.sum { |file| File.read(file).split.size }) if option['w'] && filename.size >= 2
-  total << format(filename.sum { |file| File.size(file) }) if option['c'] && filename.size >= 2
+  if filename.size >= 2
+    total = []
+    total << format(filename.sum { |file| File.read(file).count("\n") }) if option['l']
+    total << format(filename.sum { |file| File.read(file).split.size }) if option['w']
+    total << format(filename.sum { |file| File.size(file) }) if option['c']
+  end
 
   output(row, total, filename)
 rescue OptionParser::InvalidOption => e
