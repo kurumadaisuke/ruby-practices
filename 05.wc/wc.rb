@@ -8,27 +8,19 @@ def format(count)
 end
 
 def read_files(filenames)
-  file_contents = []
-  filenames.map { |filename| file_contents << File.read(filename) }
-  file_contents
+  filenames.map { |filename| File.read(filename) }
 end
 
 def lines_count(file_contents)
-  lines = []
-  file_contents.each { |content| lines << format(content.count("\n")) }
-  lines
+  file_contents.map { |content| format(content.count("\n")) }
 end
 
 def words_count(file_contents)
-  words = []
-  file_contents.each { |content| words << format(content.split.size) }
-  words
+  file_contents.map { |content| format(content.split.size) }
 end
 
 def bytes_count(file_contents)
-  bytes = []
-  file_contents.each { |content| bytes << format(content.bytesize) }
-  bytes
+  file_contents.map { |content| format(content.bytesize) }
 end
 
 def output(row, total, filename)
@@ -60,12 +52,7 @@ begin
     filename = filename.each(&:strip!)
   end
 
-  if filename.size >= 2
-    total = []
-    total << format(filename.sum { |file| File.read(file).count("\n") }) if option['l']
-    total << format(filename.sum { |file| File.read(file).split.size }) if option['w']
-    total << format(filename.sum { |file| File.size(file) }) if option['c']
-  end
+  total = row[0..-2].map { |a| format(a.map.sum { |r| r.to_i})} if filename.size >= 2
 
   output(row, total, filename)
 rescue OptionParser::InvalidOption => e
