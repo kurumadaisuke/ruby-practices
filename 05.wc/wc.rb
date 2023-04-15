@@ -52,7 +52,7 @@ begin
     filename = filename.each(&:strip!)
   end
 
-  total = row[0..-2].map { |a| format(a.map.sum { |r| r.to_i})} if filename.size >= 2
+  total = row[0..-2].map { |a| format(a.map.sum(&:to_i)) } if filename.size >= 2
 
   output(row, total, filename)
 rescue OptionParser::InvalidOption => e
