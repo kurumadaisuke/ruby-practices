@@ -1,0 +1,16 @@
+- Game
+  - initialize(shots)
+  - score
+  - build_frames
+  - bonus_point(frame, frame_number)
+
+- Frame
+attr_accessor :first_shot, :second_shot
+  - initialize(first_mark, second_mark, third_mark)
+  - score
+  - strike?
+  - spare?
+
+- Shot
+  - initialize(mark)
+  - score

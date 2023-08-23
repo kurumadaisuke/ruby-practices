@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'frame'
 require 'debug'
 
@@ -27,21 +29,20 @@ class Game
   def build_frames
     frame = []
     frames = []
+
     @shots.each do |shot|
       if shot == 'X'
         frames << [shot.dup]
       else
         frame << shot.dup
-          if frame.length == 2
-            frames << frame
-            frame = []
-          end
+        if frame.length == 2
+          frames << frame
+          frame = []
+        end
       end
     end
 
-    if frame.length == 1
-      frames << frame
-    end
+    frames << frame if frame.length == 1
 
     if frames.length >= 10
       frames[9] += frames[10..].flatten
@@ -50,11 +51,11 @@ class Game
     frames
   end
 
-  def bonus_point(frame, i)
-    next_frame = @game[i + 1]
+  def bonus_point(frame, frame_number)
+    next_frame = @game[frame_number + 1]
     if frame.strike?
-      if next_frame.strike? && i != 8
-        two_next_frame = @game[i + 2]
+      if next_frame.strike? && frame_number != 8
+        two_next_frame = @game[frame_number + 2]
         next_frame.first_shot.score + two_next_frame.first_shot.score
       else
         next_frame.first_shot.score + next_frame.second_shot.score
