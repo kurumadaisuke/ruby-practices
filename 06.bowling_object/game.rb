@@ -1,25 +1,22 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
-require 'debug'
 
 class Game
-  def initialize(shots)
-    @shots = shots
-    @game = []
+  def initialize(bowling_score)
+    @bowling_score = bowling_score
+    @frames = []
   end
 
-  def score
-    @frames = build_frames
+  def score_calculation
+    @new_frames = build_frames
     total_score = 0
 
-    @frames.each.with_index do |frame, i|
-      @game << Frame.new(frame[0], frame[1], frame[2])
-      total_score += @game[i].score
-      i + 1
+    @new_frames.each.with_index do |_frame, frame_number|
+      total_score += @frames[frame_number].score
     end
 
-    @game[0..8].each.with_index do |frame, i|
+    @frames[0..8].each.with_index do |frame, i|
       total_score += bonus_point(frame, i)
     end
 
@@ -28,34 +25,36 @@ class Game
 
   def build_frames
     frame = []
-    frames = []
+    frame_list = []
 
-    @shots.each do |shot|
+    @bowling_score.each do |shot|
       if shot == 'X'
-        frames << [shot.dup]
+        frame_list << [shot.dup]
       else
         frame << shot.dup
         if frame.length == 2
-          frames << frame
+          frame_list << frame
           frame = []
         end
       end
     end
 
-    frames << frame if frame.length == 1
+    frame_list << frame if frame.length == 1
+    frame_list[9] += frame_list[10..].flatten if frame_list.length >= 10
 
-    if frames.length >= 10
-      frames[9] += frames[10..].flatten
-      frames = frames.take(10)
+    frame_list = frame_list.take(10)
+    frame_list.each.with_index do |f, frame_number|
+      @frames << Frame.new(f[0], f[1], f[2], frame_number)
     end
-    frames
+
+    frame_list
   end
 
   def bonus_point(frame, frame_number)
-    next_frame = @game[frame_number + 1]
+    next_frame = @frames[frame_number + 1]
     if frame.strike?
-      if next_frame.strike? && frame_number != 8
-        two_next_frame = @game[frame_number + 2]
+      if next_frame.strike? && frame.until_nine?
+        two_next_frame = @frames[frame_number + 2]
         next_frame.first_shot.score + two_next_frame.first_shot.score
       else
         next_frame.first_shot.score + next_frame.second_shot.score
