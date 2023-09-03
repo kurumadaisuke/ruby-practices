@@ -25,7 +25,7 @@ class Frame
   end
 
   def spare?
-    score == 10
+    @first_shot.score != 10 && score == 10
   end
 
   def until_nine?
