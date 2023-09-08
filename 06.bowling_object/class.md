@@ -1,6 +1,6 @@
 # Game
 - initialize(bowling_score)
-- score_calculation
+- calculate_score
 - build_frames
 - bonus_point(frame, frame_number)
 

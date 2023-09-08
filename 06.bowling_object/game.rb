@@ -8,7 +8,7 @@ class Game
     @frames = []
   end
 
-  def score_calculation
+  def calculate_score
     @new_frames = build_frames
     total_score = 0
 
