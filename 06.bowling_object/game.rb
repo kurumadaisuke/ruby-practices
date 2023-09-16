@@ -1,18 +1,42 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
-
+require 'debug'
+        # binding.break
+        
 class Game
   def initialize(bowling_score)
-    @bowling_score = bowling_score
     @frames = []
+    @frames = mold_frame(bowling_score)
+    @frames.each.with_index do |f, frame_number|
+      @frames[frame_number] = Frame.new(f[0], f[1], f[2], frame_number)
+    end
+  end
+
+  def mold_frame(bowling_score)
+    frame = []
+    
+    bowling_score.each do |shot|
+      if shot == 'X'
+        @frames << [shot.dup]
+      else
+        frame << shot.dup
+        if frame.length == 2
+          @frames << frame
+          frame = []
+        end
+      end
+    end
+
+    @frames << frame if frame.length == 1
+    @frames[9] += @frames[10..].flatten if @frames.length >= 10
+    @frames.take(10)
   end
 
   def calculate_score
-    @new_frames = build_frames
     total_score = 0
 
-    @new_frames.each.with_index do |_frame, frame_number|
+    @frames.each.with_index do |_frame, frame_number|
       total_score += @frames[frame_number].score
     end
 
@@ -21,33 +45,6 @@ class Game
     end
 
     total_score
-  end
-
-  def build_frames
-    frame = []
-    frame_list = []
-
-    @bowling_score.each do |shot|
-      if shot == 'X'
-        frame_list << [shot.dup]
-      else
-        frame << shot.dup
-        if frame.length == 2
-          frame_list << frame
-          frame = []
-        end
-      end
-    end
-
-    frame_list << frame if frame.length == 1
-    frame_list[9] += frame_list[10..].flatten if frame_list.length >= 10
-
-    frame_list = frame_list.take(10)
-    frame_list.each.with_index do |f, frame_number|
-      @frames << Frame.new(f[0], f[1], f[2], frame_number)
-    end
-
-    frame_list
   end
 
   def bonus_point(frame, frame_number)
