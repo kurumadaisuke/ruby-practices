@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
-require 'debug'
-        # binding.break
-        
+
 class Game
   def initialize(bowling_score)
     @frames = []
@@ -15,7 +13,7 @@ class Game
 
   def mold_frame(bowling_score)
     frame = []
-    
+
     bowling_score.each do |shot|
       if shot == 'X'
         @frames << [shot.dup]
