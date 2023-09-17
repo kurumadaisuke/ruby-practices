@@ -1,34 +1,36 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
+require 'debug'
 
 class Game
   def initialize(bowling_score)
-    @frames = []
-    @frames = mold_frame(bowling_score)
-    @frames.each.with_index do |f, frame_number|
-      @frames[frame_number] = Frame.new(f[0], f[1], f[2], frame_number)
-    end
+    @frames = build_frame(bowling_score)
+      # binding.break
   end
 
-  def mold_frame(bowling_score)
+  def build_frame(bowling_score)
     frame = []
+    tmp_frames = []
 
-    bowling_score.each do |shot|
-      if shot == 'X'
-        @frames << [shot.dup]
+    bowling_score.map.with_index do |mark, frame_number|
+      if mark == 'X'
+        tmp_frames << [mark.dup]
       else
-        frame << shot.dup
+        frame << mark.dup
         if frame.length == 2
-          @frames << frame
+          tmp_frames << frame
           frame = []
         end
       end
     end
 
-    @frames << frame if frame.length == 1
-    @frames[9] += @frames[10..].flatten if @frames.length >= 10
-    @frames.take(10)
+    tmp_frames << frame if frame.length == 1
+    tmp_frames[9] += tmp_frames[10..].flatten if tmp_frames.length >= 10
+
+    tmp_frames.take(10).map.with_index do |mark, frame_number|
+      Frame.new(mark[0],mark[1], mark[2], frame_number)
+    end
   end
 
   def calculate_score
