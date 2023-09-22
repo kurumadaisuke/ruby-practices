@@ -7,39 +7,29 @@ class Game
   def initialize(marks)
     @frames = []
     build_frame(marks)
-    # binding.break
   end
 
   def build_frame(marks)
-    tmp_frame_in_each_at_marks = []
-    frame_number = 0
+    tmp_frame = []
+    count_frame_number = 0
 
     marks.each do |mark|
       if mark == 'X' && frame_number != 9
-        @frames << Frame.new(first_mark: mark, frame_number: frame_number)
-        frame_number += 1
-      elsif frame_number == 9
-        tmp_frame_in_each_at_marks << mark
+        @frames << Frame.new(frame_number: count_frame_number, first_mark: mark)
+        count_frame_number += 1
+      elsif count_frame_number == 9
+        tmp_frame << mark
       else
-        tmp_frame_in_each_at_marks << mark
+        tmp_frame << mark
 
-        if tmp_frame_in_each_at_marks.length == 2
-          @frames << Frame.new(
-            first_mark: tmp_frame_in_each_at_marks[0],
-            second_mark: tmp_frame_in_each_at_marks[1],
-            frame_number: frame_number
-          )
-          frame_number += 1
-          tmp_frame_in_each_at_marks = []
+        if tmp_frame.length == 2
+          @frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1])
+          count_frame_number += 1
+          tmp_frame = []
         end
       end
     end
-    @frames << Frame.new(
-      first_mark: tmp_frame_in_each_at_marks[0],
-      second_mark: tmp_frame_in_each_at_marks[1],
-      third_mark: tmp_frame_in_each_at_marks[2],
-      frame_number: frame_number
-    )
+    @frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1], third_mark: tmp_frame[2])
   end
 
   def calculate_score
