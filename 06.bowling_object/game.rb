@@ -4,7 +4,6 @@ require_relative 'frame'
 require 'debug'
 
 class Game
-  # marksにした方がわかりやすい
   def initialize(marks)
     @frames = []
     build_frame(marks)
@@ -16,11 +15,14 @@ class Game
     frame_number = 0
 
     marks.each do |mark|
-      if mark == 'X'
+      if mark == 'X' && frame_number != 9
         @frames << Frame.new(first_mark: mark, frame_number: frame_number)
         frame_number += 1
+      elsif frame_number == 9
+        tmp_frame_in_each_at_marks << mark
       else
         tmp_frame_in_each_at_marks << mark
+
         if tmp_frame_in_each_at_marks.length == 2
           @frames << Frame.new(
             first_mark: tmp_frame_in_each_at_marks[0],
@@ -31,14 +33,13 @@ class Game
           tmp_frame_in_each_at_marks = []
         end
       end
-      tmp_frame_in_each_at_marks << mark if frame_number > 9 && tmp_frame_in_each_at_marks.length == 1
     end
-      @frames << Frame.new(
-                  first_mark: tmp_frame_in_each_at_marks[0],
-                  second_mark: tmp_frame_in_each_at_marks[1],
-                  third_mark:  tmp_frame_in_each_at_marks[2],
-                  frame_number: frame_number
-                )
+    @frames << Frame.new(
+      first_mark: tmp_frame_in_each_at_marks[0],
+      second_mark: tmp_frame_in_each_at_marks[1],
+      third_mark: tmp_frame_in_each_at_marks[2],
+      frame_number: frame_number
+    )
   end
 
   def calculate_score
@@ -48,8 +49,8 @@ class Game
       total_score += @frames[frame_number].score
     end
 
-    @frames[0..8].each.with_index do |frame, i|
-      total_score += bonus_point(frame, i)
+    @frames[0..8].each.with_index do |frame, frame_number|
+      total_score += bonus_point(frame, frame_number)
     end
 
     total_score
