@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
-require 'debug'
 
 class Game
   def initialize(marks)
@@ -37,12 +36,9 @@ class Game
   def calculate_score
     total_score = 0
 
-    @frames.each.with_index do |_frame, frame_number|
+    @frames.each.with_index do |frame, frame_number|
       total_score += @frames[frame_number].score
-    end
-
-    @frames[0..8].each.with_index do |frame, frame_number|
-      total_score += bonus_point(frame, frame_number)
+      total_score += bonus_point(frame, frame_number) if frame_number != 9
     end
 
     total_score
