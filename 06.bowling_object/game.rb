@@ -46,13 +46,12 @@ class Game
 
   def bonus_point(frame, frame_number)
     next_frame = @frames[frame_number + 1]
-    if frame.strike?
-      if next_frame.strike? && frame.until_nine?
-        two_next_frame = @frames[frame_number + 2]
-        next_frame.first_shot.score + two_next_frame.first_shot.score
-      else
-        next_frame.first_shot.score + next_frame.second_shot.score
-      end
+
+    if frame.strike? && next_frame.strike? && frame.until_nine?
+      two_next_frame = @frames[frame_number + 2]
+      next_frame.first_shot.score + two_next_frame.first_shot.score
+    elsif frame.strike?
+      next_frame.first_shot.score + next_frame.second_shot.score
     elsif frame.spare?
       next_frame.first_shot.score
     else
