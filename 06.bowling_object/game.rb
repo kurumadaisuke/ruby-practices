@@ -5,17 +5,18 @@ require 'debug'
 
 class Game
   def initialize(marks)
-    @frames = []
-    build_frame(marks)
+    @frames = build_frame(marks)
   end
 
   def build_frame(marks)
     tmp_frame = []
+    frames = []
+
     count_frame_number = 0
 
     marks.each do |mark|
-      if mark == 'X' && frame_number != 9
-        @frames << Frame.new(frame_number: count_frame_number, first_mark: mark)
+      if mark == 'X' && count_frame_number != 9
+        frames << Frame.new(frame_number: count_frame_number, first_mark: mark)
         count_frame_number += 1
       elsif count_frame_number == 9
         tmp_frame << mark
@@ -23,13 +24,14 @@ class Game
         tmp_frame << mark
 
         if tmp_frame.length == 2
-          @frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1])
+          frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1])
           count_frame_number += 1
           tmp_frame = []
         end
       end
     end
-    @frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1], third_mark: tmp_frame[2])
+    frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1], third_mark: tmp_frame[2])
+    frames
   end
 
   def calculate_score

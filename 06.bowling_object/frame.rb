@@ -5,12 +5,11 @@ require_relative 'shot'
 class Frame
   attr_accessor :first_shot, :second_shot
 
-  # デフォルト値でnilを入れると良い。frame_numberは先頭に持ってくる対応をするか キーワード引数 name:1 でも良い
-  def initialize(first_mark, second_mark, third_mark, frame_number)
+  def initialize(frame_number:, first_mark:, second_mark: nil, third_mark: nil)
+    @frame_number = frame_number
     @first_shot = Shot.new(first_mark)
     @second_shot = Shot.new(second_mark)
     @third_shot = Shot.new(third_mark)
-    @frame_number = frame_number
   end
 
   def score
