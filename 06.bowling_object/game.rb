@@ -14,14 +14,13 @@ class Game
     count_frame_number = 0
 
     marks.each do |mark|
-      if mark == 'X' && count_frame_number != 9
+      if count_frame_number == 9
+        tmp_frame << mark
+      elsif mark == 'X'
         frames << Frame.new(frame_number: count_frame_number, first_mark: mark)
         count_frame_number += 1
-      elsif count_frame_number == 9
-        tmp_frame << mark
       else
         tmp_frame << mark
-
         if tmp_frame.length == 2
           frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1])
           count_frame_number += 1
@@ -30,7 +29,6 @@ class Game
       end
     end
     frames << Frame.new(frame_number: count_frame_number, first_mark: tmp_frame[0], second_mark: tmp_frame[1], third_mark: tmp_frame[2])
-    frames
   end
 
   def calculate_score
@@ -38,13 +36,13 @@ class Game
 
     @frames.each.with_index do |frame, frame_number|
       total_score += @frames[frame_number].score
-      total_score += bonus_point(frame, frame_number) if frame_number != 9
+      total_score += calculate_bonus_point(frame, frame_number) if frame_number != 9
     end
 
     total_score
   end
 
-  def bonus_point(frame, frame_number)
+  def calculate_bonus_point(frame, frame_number)
     next_frame = @frames[frame_number + 1]
 
     if frame.strike? && next_frame.strike? && frame.until_nine?
