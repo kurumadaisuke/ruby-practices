@@ -1,7 +1,7 @@
 # Game
 - initialize(marks)
 - calculate_score
-- bonus_point(frame, frame_number)
+- calculate_bonus_point(frame, frame_number)
 
 # Frame
 ## attr_accessor :first_shot, :second_shot
