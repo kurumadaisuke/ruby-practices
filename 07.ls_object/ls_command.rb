@@ -1,7 +1,16 @@
 # frozen_string_literal: true
+require 'debug'
 
-require 'optparse'
-require_relative 'ls'
+require_relative 'display_format'
 
-receive_options = ARGV.getopts('arl')
-ls = Ls.new(receive_options)
+class LsCommand
+  def initialize(receive_options)
+    @display_format = DisplayFormat.new(receive_options)
+  end
+
+  def output
+    @display_format.parser_option
+  end
+end
+
+# binding.break
