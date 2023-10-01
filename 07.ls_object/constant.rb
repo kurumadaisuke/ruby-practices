@@ -1,6 +1,16 @@
 COLUMN_SIZE = 4
 
-CONVERSION_PERMISSION = {
+FILETYPE = {
+  'fifo' => 'p',
+  'characterSpecial' => 'c',
+  'directory' => 'd',
+  'blockSpecial' => 'b',
+  'file' => '-',
+  'link' => 'l',
+  'socket' => 's'
+}.freeze
+
+PERMISSION = {
   '0' => '---',
   '1' => '--x',
   '2' => '-w-',
@@ -9,14 +19,4 @@ CONVERSION_PERMISSION = {
   '5' => 'r-x',
   '6' => 'rw-',
   '7' => 'rwx'
-}.freeze
-
-CONVERSION_FILETYPE = {
-  'fifo' => 'p',
-  'characterSpecial' => 'c',
-  'directory' => 'd',
-  'blockSpecial' => 'b',
-  'file' => '-',
-  'link' => 'l',
-  'socket' => 's'
 }.freeze

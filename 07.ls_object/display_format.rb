@@ -52,17 +52,18 @@ class DisplayFormat
     puts "total #{total_block_size}"
 
     files_and_directories.each do |file_or_directory|
-      y = File.stat(file_or_directory)
+      file_or_directory_info = File.stat(file_or_directory)
+      # binding.break
       text = [
-        CONVERSION_FILETYPE[y.ftype],
-        CONVERSION_FILETYPE(format('%06d', y.mode.to_s(8)).slice(3, 1)),
-        CONVERSION_FILETYPE(format('%06d', y.mode.to_s(8)).slice(4, 1)),
-        "#{CONVERSION_FILETYPE(format('%06d', y.mode.to_s(8)).slice(5, 1))} ",
-        "#{y.nlink} ",
-        "#{Etc.getpwuid(y.uid).name} ",
-        "#{Etc.getgrgid(y.gid).name} ",
-        "#{y.size.to_s.rjust(4)} ",
-        "#{y.mtime.strftime('%m %d %H:%M')} ",
+        FILETYPE[file_or_directory_info.ftype],
+        PERMISSION[format('%06d', file_or_directory_info.mode.to_s(8)).slice(3, 1)],
+        PERMISSION[format('%06d', file_or_directory_info.mode.to_s(8)).slice(4, 1)],
+        "#{PERMISSION[format('%06d', file_or_directory_info.mode.to_s(8)).slice(5, 1)]} ",
+        "#{file_or_directory_info.nlink} ",
+        "#{Etc.getpwuid(file_or_directory_info.uid).name} ",
+        "#{Etc.getgrgid(file_or_directory_info.gid).name} ",
+        "#{file_or_directory_info.size.to_s.rjust(4)} ",
+        "#{file_or_directory_info.mtime.strftime('%m %d %H:%M')} ",
         file_or_directory
       ]
       puts text.join
