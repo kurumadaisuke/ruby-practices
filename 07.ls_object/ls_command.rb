@@ -11,5 +11,3 @@ class LsCommand
     @display_format.parser_option
   end
 end
-
-# binding.break
