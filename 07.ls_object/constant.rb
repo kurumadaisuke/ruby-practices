@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 COLUMN_SIZE = 4
 
 FILETYPE = {
