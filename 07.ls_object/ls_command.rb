@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'params_option'
-require 'debug'
-# binding.break
 
 COLUMN_SIZE = 4
 
