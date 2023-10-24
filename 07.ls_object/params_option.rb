@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'entry'
+require_relative 'file_info'
 
 class ParamsOption
   attr_accessor :params_options
@@ -9,14 +9,8 @@ class ParamsOption
     @params_options = params_options
   end
 
-  def entries_list
-    @entries = fetch_entries_include_a?
-    @entries.map { |entry_name| Entry.new(entry_name) }
-  end
-
   def fetch_entries_include_a?
-    flags = @params_options['a'] ? File::FNM_DOTMATCH : 0
-    Dir.glob('*', flags)
+    @params_options['a'] ? File::FNM_DOTMATCH : 0
   end
 
   def reverse_entries_include_r?(entries)
