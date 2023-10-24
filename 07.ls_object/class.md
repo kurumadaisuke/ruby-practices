@@ -1,27 +1,30 @@
 # クラス設計書
+
 - LsCommand
-  - initialize(receive_options)
+  - initialize(params_options)
   - output
+  - file_info_list
+  - default_format(file_info_list)
+  - long_format(file_info_list)
+  - character_size_calculator(file_info_list)
+  - total_block_size(file_info_list)
 
-- FileAndDirectory
-  attr_accessor :files_and_directories
-  - initialize(receive_options)
+- FileInfo
+  attr_accessor :name
+  - initialize(name)
+  - filetype
+  - permission
+  - hard_link
+  - user_name
+  - group_name
+  - byte_size
+  - updated_date
+  - block_size
+  - show_detail
 
-- DisplayFormatter
-  - initialize(receive_options)
-  - self.default_format(files_and_directories)
-  - self.long_format(files_and_directories
-  - self.define_size(files_and_directories)
-
-
-- DisplayFormat < DisplayFormatter
-  attr_accessor :receive_options
-  - parser_option
-  - include_a?
-  - include_r?
-  - include_l?
-
-※ constant.rb
-COLUMN_SIZE
-FILETYPE
-PERMISSION
+- ParamsOption
+  attr_accessor :params_options
+  - initialize(params_options)
+  - fetch_files_include_a?
+  - reverse_files_include_r?(files)
+  - format_files_include_l?

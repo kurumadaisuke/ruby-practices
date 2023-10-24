@@ -7,57 +7,57 @@ COLUMN_SIZE = 4
 class LsCommand
   def initialize(params_options)
     @params_options = ParamsOption.new(params_options)
+    @file_info_list = file_info_list
   end
 
   def output
-    @entries_list = entries_list
-    @params_options.format_entries_include_l? ? long_format(@entries_list) : default_format(@entries_list)
+    @params_options.format_files_include_l? ? long_format(@file_info_list) : default_format(@file_info_list)
   end
 
-  def entries_list
-    entries = Dir.glob('*', @params_options.fetch_entries_include_a?)
-    entries = @params_options.reverse_entries_include_r?(entries)
-    entries.map { |entry_name| FileInfo.new(entry_name) }
+  def file_info_list
+    files = Dir.glob('*', @params_options.fetch_files_include_a?)
+    files = @params_options.reverse_files_include_r?(files)
+    files.map { |file_name| FileInfo.new(file_name) }
   end
 
-  def default_format(entries_list)
-    character_size = character_size_calculator(entries_list)
-    row_size = entries_list.each_slice(COLUMN_SIZE).to_a.size
-    columns = entries_list.each_slice(row_size).to_a
+  def default_format(file_info_list)
+    character_size = character_size_calculator(file_info_list)
+    row_size = file_info_list.each_slice(COLUMN_SIZE).to_a.size
+    columns = file_info_list.each_slice(row_size).to_a
     columns[-1].fill(nil, columns[-1].size...row_size)
 
-    columns.transpose.each do |row_entries_list|
-      row_entries_list.each do |entry|
-        entry_name = entry ? entry.name.to_s : entry.to_s
-        print entry_name.ljust(character_size)
+    columns.transpose.each do |row_file_info_list|
+      row_file_info_list.each do |file|
+        file_name = file ? file.name.to_s : file.to_s
+        print file_name.ljust(character_size)
       end
       print "\n"
     end
   end
 
-  def character_size_calculator(entries_list)
+  def character_size_calculator(file_info_list)
     max_length = 0
-    entries_list.each do |entry|
-      name_length = entry.name.length
+    file_info_list.each do |file|
+      name_length = file.name.length
       max_length = name_length if name_length > max_length
     end
     max_length + 6
   end
 
-  def long_format(entries_list)
-    total_block_size = total_block_size(entries_list)
+  def long_format(file_info_list)
+    total_block_size = total_block_size(file_info_list)
     puts "total #{total_block_size}"
 
-    entries_list.each do |entry|
-      row_text = entry.show_detail
+    file_info_list.each do |file|
+      row_text = file.show_detail
       puts row_text.join
     end
   end
 
-  def total_block_size(entries_list)
+  def total_block_size(file_info_list)
     total_block_size = 0
-    entries_list.each do |entry|
-      total_block_size += entry.block_size
+    file_info_list.each do |file|
+      total_block_size += file.block_size
     end
     total_block_size
   end
