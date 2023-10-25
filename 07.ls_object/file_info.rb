@@ -65,7 +65,7 @@ class FileInfo
     @block_size ||= @file_info.blocks
   end
 
-  def show_detail
+  def inspect_stats
     [
       filetype,
       permission,
@@ -75,6 +75,6 @@ class FileInfo
       "#{byte_size.rjust(4)} ",
       "#{updated_date} ",
       name
-    ]
+    ].join
   end
 end

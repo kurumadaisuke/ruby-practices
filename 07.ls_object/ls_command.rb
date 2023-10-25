@@ -15,8 +15,9 @@ class LsCommand
   end
 
   def file_info_list
-    files = Dir.glob('*', @params_options.fetch_files_include_a?)
-    files = @params_options.reverse_files_include_r?(files)
+    flags = @params_options.fetch_files_include_a? ? File::FNM_DOTMATCH : 0
+    files = Dir.glob('*', flags)
+    files.reverse! if @params_options.reverse_files_include_r?
     files.map { |file_name| FileInfo.new(file_name) }
   end
 
@@ -28,10 +29,10 @@ class LsCommand
 
     columns.transpose.each do |row_file_info_list|
       row_file_info_list.each do |file|
-        file_name = file ? file.name.to_s : file.to_s
+        file_name = file&.name.to_s
         print file_name.ljust(character_size)
       end
-      print "\n"
+      puts
     end
   end
 
@@ -49,16 +50,11 @@ class LsCommand
     puts "total #{total_block_size}"
 
     file_info_list.each do |file|
-      row_text = file.show_detail
-      puts row_text.join
+      puts file.inspect_stats
     end
   end
 
   def total_block_size(file_info_list)
-    total_block_size = 0
-    file_info_list.each do |file|
-      total_block_size += file.block_size
-    end
-    total_block_size
+    file_info_list.sum(&:block_size)
   end
 end

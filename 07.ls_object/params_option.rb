@@ -10,14 +10,14 @@ class ParamsOption
   end
 
   def fetch_files_include_a?
-    @params_options['a'] ? File::FNM_DOTMATCH : 0
+    @params_options['a'] || false
   end
 
-  def reverse_files_include_r?(files)
-    @params_options['r'] ? files.reverse : files
+  def reverse_files_include_r?
+    @params_options['r'] || false
   end
 
   def format_files_include_l?
-    @params_options['l'] ? true : false
+    @params_options['l'] || false
   end
 end

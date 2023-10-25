@@ -20,7 +20,7 @@
   - byte_size
   - updated_date
   - block_size
-  - show_detail
+  - inspect_stats
 
 - ParamsOption
   attr_accessor :params_options
