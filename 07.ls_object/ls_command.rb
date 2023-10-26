@@ -11,18 +11,18 @@ class LsCommand
   end
 
   def output
-    @params_options.format_files_include_l? ? long_format(@file_info_list) : default_format(@file_info_list)
+    @params_options.format_type? ? long_format(@file_info_list) : default_format(@file_info_list)
   end
 
   def file_info_list
-    flags = @params_options.fetch_files_include_a? ? File::FNM_DOTMATCH : 0
+    flags = @params_options.show_all_files? ? File::FNM_DOTMATCH : 0
     files = Dir.glob('*', flags)
-    files.reverse! if @params_options.reverse_files_include_r?
+    files.reverse! if @params_options.show_reverse_files?
     files.map { |file_name| FileInfo.new(file_name) }
   end
 
   def default_format(file_info_list)
-    character_size = character_size_calculator(file_info_list)
+    string_length = string_length(file_info_list)
     row_size = file_info_list.each_slice(COLUMN_SIZE).to_a.size
     columns = file_info_list.each_slice(row_size).to_a
     columns[-1].fill(nil, columns[-1].size...row_size)
@@ -30,19 +30,14 @@ class LsCommand
     columns.transpose.each do |row_file_info_list|
       row_file_info_list.each do |file|
         file_name = file&.name.to_s
-        print file_name.ljust(character_size)
+        print file_name.ljust(string_length)
       end
       puts
     end
   end
 
-  def character_size_calculator(file_info_list)
-    max_length = 0
-    file_info_list.each do |file|
-      name_length = file.name.length
-      max_length = name_length if name_length > max_length
-    end
-    max_length + 6
+  def string_length(file_info_list)
+    file_info_list.map { |file| file.name.length }.max + 6
   end
 
   def long_format(file_info_list)

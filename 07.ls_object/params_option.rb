@@ -9,15 +9,15 @@ class ParamsOption
     @params_options = params_options
   end
 
-  def fetch_files_include_a?
+  def show_all_files?
     @params_options['a'] || false
   end
 
-  def reverse_files_include_r?
+  def show_reverse_files?
     @params_options['r'] || false
   end
 
-  def format_files_include_l?
+  def format_type?
     @params_options['l'] || false
   end
 end
