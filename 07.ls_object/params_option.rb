@@ -17,7 +17,7 @@ class ParamsOption
     @params_options['r'] || false
   end
 
-  def format_type?
+  def show_long_format?
     @params_options['l'] || false
   end
 end

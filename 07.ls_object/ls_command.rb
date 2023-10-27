@@ -11,8 +11,10 @@ class LsCommand
   end
 
   def output
-    @params_options.format_type? ? long_format(@file_info_list) : default_format(@file_info_list)
+    @params_options.show_long_format? ? long_format(@file_info_list) : default_format(@file_info_list)
   end
+
+  private
 
   def file_info_list
     flags = @params_options.show_all_files? ? File::FNM_DOTMATCH : 0

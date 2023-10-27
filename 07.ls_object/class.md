@@ -27,4 +27,4 @@
   - initialize(params_options)
   - show_all_files?
   - show_reverse_files?
-  - format_type?
+  - show_long_format?
